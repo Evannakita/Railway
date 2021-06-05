@@ -80,6 +80,10 @@ public enum LargeTrackSide implements IStringSerializable {
   }
 
   public static BlockPos[] getOffsets (LargeTrackSide state) { return state.offsets; }
+  public static BlockPos   getOtherEnd (LargeTrackSide state, VectorUtils.Vector start) {
+    if (start.value.equals(state.offsets[0])) return state.offsets[1];
+    return state.offsets[0];
+  }
 
   @Override
   public String getString() {

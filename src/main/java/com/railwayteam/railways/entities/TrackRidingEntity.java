@@ -1,5 +1,9 @@
 package com.railwayteam.railways.entities;
 
+import com.railwayteam.railways.Railways;
+import com.railwayteam.railways.blocks.AbstractLargeTrackBlock;
+import com.railwayteam.railways.util.VectorUtils;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MoverType;
@@ -12,14 +16,10 @@ import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -100,18 +100,18 @@ public abstract class TrackRidingEntity extends Entity {
         return 0.8F;
     }
 
-    public Vector3d unknownMovementMethod1(double p_233626_1_, boolean p_233626_3_, Vector3d p_233626_4_) {
+    public Vector3d unknownMovementMethod1(double gravity, boolean isNotFalling, Vector3d motion) {
         if (!this.hasNoGravity() && !this.isSprinting()) {
-            double d0;
-            if (p_233626_3_ && Math.abs(p_233626_4_.y - 0.005D) >= 0.003D && Math.abs(p_233626_4_.y - p_233626_1_ / 16.0D) < 0.003D) {
-                d0 = -0.003D;
+            double y;
+            if (isNotFalling && Math.abs(motion.y - 0.005D) >= 0.003D && Math.abs(motion.y - gravity / 16.0D) < 0.003D) {
+                y = -0.003D;
             } else {
-                d0 = p_233626_4_.y - p_233626_1_ / 16.0D;
+                y = motion.y - gravity / 16.0D;
             }
 
-            return new Vector3d(p_233626_4_.x, d0, p_233626_4_.z);
+            return new Vector3d(motion.x, y, motion.z);
         } else {
-            return p_233626_4_;
+            return motion;
         }
     }
 
@@ -164,6 +164,18 @@ public abstract class TrackRidingEntity extends Entity {
     }
 
     public void move() {
+        BlockState blockState = this.world.getBlockState(this.getBlockPos());
+        boolean isOnTrack = (blockState.getBlock() instanceof AbstractLargeTrackBlock);
+
+        // handle facing
+        if (isOnTrack) {
+          VectorUtils.Vector next = ((AbstractLargeTrackBlock)blockState.getBlock()).getNextDirection(
+            blockState, world, getBlockPos(),
+            VectorUtils.Vector.getClosest(getMotion()).getOpposite() // get the direction we came from
+          );
+          Vector3d rotate = VectorUtils.blockPosToVector3d(next.value);//.subtract(getHorizontalFacing().getDirectionVec()));
+          this.rotationYaw = (float)(180f * Math.atan2(rotate.z, rotate.x)/Math.PI);
+        }
         double gravity = getGravity();
         boolean isNotFalling = this.getMotion().y <= 0.0D;
 

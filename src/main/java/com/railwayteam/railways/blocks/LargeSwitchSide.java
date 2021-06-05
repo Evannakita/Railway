@@ -56,6 +56,10 @@ public enum LargeSwitchSide implements IStringSerializable {
   }
 
   public static BlockPos[] getOffsets (LargeSwitchSide state) { return state.offsets; }
+  public static BlockPos   getOtherEnd (LargeSwitchSide state, VectorUtils.Vector start, boolean curved) {
+    if (start.value.equals(state.offsets[0])) return (curved ? state.offsets[2] : state.offsets[1]);
+    return state.offsets[0];
+  }
 
   @Override
   public String getString() {

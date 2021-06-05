@@ -99,6 +99,11 @@ public class LargeSwitchTrackBlock extends AbstractLargeTrackBlock {
     return state;
   }
 
+  @Override
+  public VectorUtils.Vector getNextDirection(BlockState state, IWorld worldIn, BlockPos pos, VectorUtils.Vector direction) {
+    return VectorUtils.Vector.getClosest(LargeSwitchSide.getOtherEnd(state.get(SWITCH_SIDE), direction, isTurning(state)));
+  }
+
   public boolean isTurning (BlockState state) {
     return state.get(BlockStateProperties.ENABLED);
   }

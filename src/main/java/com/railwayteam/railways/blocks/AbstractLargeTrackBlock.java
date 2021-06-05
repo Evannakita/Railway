@@ -34,6 +34,7 @@ public abstract class AbstractLargeTrackBlock extends Block {
   protected abstract boolean canConnectFrom (BlockState state, IWorld worldIn, BlockPos pos, VectorUtils.Vector direction);
 
   public abstract ArrayList<BlockPos> getAdjacentTracks (BlockState state, IWorld worldIn, BlockPos pos);
+  public abstract VectorUtils.Vector  getNextDirection  (BlockState state, IWorld worldIn, BlockPos pos, VectorUtils.Vector direction);
 
   @Nullable
   @Override

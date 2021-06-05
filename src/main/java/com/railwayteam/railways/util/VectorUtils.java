@@ -2,6 +2,7 @@ package com.railwayteam.railways.util;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 
 public abstract class VectorUtils {
     public static Vector3d opposite(BlockPos in) {
@@ -34,10 +35,19 @@ public abstract class VectorUtils {
             ));
         }
 
-        public static Vector getClosest(Vector3d candidate) {
+        public static Vector getClosest (Vector3d candidate) {
             for (Vector v : values()) {
                 if (Integer.signum((int) candidate.getX()) != v.value.getX()) continue;
                 if (Integer.signum((int) candidate.getZ()) != v.value.getZ()) continue;
+                return v;
+            }
+            return SOUTH;
+        }
+
+        public static Vector getClosest (Vector3i candidate) {
+            for (Vector v : values()) {
+                if (Integer.signum(candidate.getX()) != v.value.getX()) continue;
+                if (Integer.signum(candidate.getZ()) != v.value.getZ()) continue;
                 return v;
             }
             return SOUTH;

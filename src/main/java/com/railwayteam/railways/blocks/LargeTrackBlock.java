@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.TrackedEntity;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -102,5 +103,10 @@ public class LargeTrackBlock extends AbstractLargeTrackBlock {
   //  for (Vec3i v : found) Railways.LOGGER.debug("  " + v.toShortString());
   //  Railways.LOGGER.debug("selected " + state.get(TRACK_SIDE).getName());
     return state;
+  }
+
+  @Override
+  public VectorUtils.Vector getNextDirection(BlockState state, IWorld worldIn, BlockPos pos, VectorUtils.Vector direction) {
+    return VectorUtils.Vector.getClosest(LargeTrackSide.getOtherEnd(state.get(TRACK_SIDE), direction));
   }
 }
