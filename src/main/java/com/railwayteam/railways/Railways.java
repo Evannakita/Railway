@@ -92,26 +92,7 @@ public class Railways {
 
   @SubscribeEvent
   public void registerCommands (RegisterCommandsEvent rce) {
-    rce.getDispatcher().register(Commands.literal("graph")
-      .then(Commands.literal("set")
-        .then(Commands.argument("position", BlockPosArgument.blockPos())
-          .executes(context -> {
-            return SEGMENT_MANAGER.addTrack(BlockPosArgument.getBlockPos(context, "position"));
-        })))
-      .then(Commands.literal("get")
-        .then(Commands.argument("position", BlockPosArgument.blockPos())
-          .executes(context -> {
-            boolean found = SEGMENT_MANAGER.containsTrack(BlockPosArgument.getBlockPos(context, "position"));
-            if (context.getSource().getEntity() != null) {
-              context.getSource().sendErrorMessage(new StringTextComponent("track was " + (found ? "" : "not ") + "found in Graph"));
-            }
-            return 1;
-        })))
-      .executes(context -> {
-        context.getSource().sendErrorMessage(new StringTextComponent("usage: graph set|get <BlockPos>"));
-        return 1;
-      })
-    );
+    RailwaysCommandHandler.registerCommands(rce);
   }
 
   @SubscribeEvent

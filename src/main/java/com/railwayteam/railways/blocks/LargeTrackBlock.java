@@ -1,5 +1,6 @@
 package com.railwayteam.railways.blocks;
 
+import com.railwayteam.railways.Railways;
 import com.railwayteam.railways.util.VectorUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -57,6 +58,18 @@ public class LargeTrackBlock extends AbstractLargeTrackBlock {
   @Override
   protected boolean canConnectFrom (BlockState state, IWorld worldIn, BlockPos pos, VectorUtils.Vector direction) {
     return state.get(TRACK_SIDE).connectsTo(direction.value);
+  }
+
+  @Override
+  public ArrayList<BlockPos> getAdjacentTracks (BlockState state, IWorld worldIn, BlockPos pos) {
+    ArrayList<BlockPos> ret = new ArrayList<>();
+    BlockPos[] offsets = LargeTrackSide.getOffsets(state.get(TRACK_SIDE));
+    //Railways.LOGGER.debug("found " + offsets.length + " offsets");
+    for (BlockPos offset : offsets) {
+      //Railways.LOGGER.debug("adding offset " + offset);
+      ret.add(pos.add(offset));
+    }
+    return ret;
   }
 
   protected BlockState checkForConnections (BlockState state, IWorld world, BlockPos pos) {

@@ -21,22 +21,45 @@ public class RailLineSegmentManager {
     return singleton;
   }
 
+  protected static int calcHash (BlockPos position) { return position.hashCode(); }
+
   public static int addTrack (BlockPos position) {
     // this is just to test!
-    segmentGraph.addNode(
-      position.getX()
-    );
+    segmentGraph.addNode(position);
     return 0;
   }
 
+  public static void removeTrack (BlockPos position) {
+    if (segmentGraph.containsNode(calcHash(position))) {
+      segmentGraph.removeNode(calcHash(position));
+    }
+  }
+
   public static boolean containsTrack (BlockPos position) {
-    return segmentGraph.containsNode(position.getX());
+    return segmentGraph.containsNode(calcHash(position));
+  }
+
+  public static int countLinks (BlockPos position) {
+    return segmentGraph.getLinkedNodeIDs(calcHash(position)).size();
+  }
+
+  public static void updateTrack (BlockPos pos, ArrayList<BlockPos> adjacent) {
+    if (!containsTrack(pos)) {
+      segmentGraph.addNode(calcHash(pos));
+    }
+    adjacent.forEach(adj -> segmentGraph.addLink(calcHash(pos), calcHash(adj)));
   }
 
   private class GraphNode {
     int id;
+    BlockPos position;
     GraphNode (int id) {
       this.id = id;
+    }
+
+    GraphNode (BlockPos pos) {
+      this.position = pos;
+      this.id = calcHash(pos);
     }
 
     @Override
@@ -60,9 +83,8 @@ public class RailLineSegmentManager {
       adjacentNodes = new HashMap<>();
     }
 
-    void addNode (int id) {
-      adjacentNodes.putIfAbsent(new GraphNode(id), new ArrayList<>());
-    }
+    void addNode (int id) { adjacentNodes.putIfAbsent(new GraphNode(id), new ArrayList<>()); }
+    void addNode (BlockPos pos) { adjacentNodes.putIfAbsent(new GraphNode(pos), new ArrayList<>()); }
 
     void removeNode (int id) {
       GraphNode n = new GraphNode(id);

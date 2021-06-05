@@ -79,6 +79,8 @@ public enum LargeTrackSide implements IStringSerializable {
     return NORTH_SOUTH;
   }
 
+  public static BlockPos[] getOffsets (LargeTrackSide state) { return state.offsets; }
+
   @Override
   public String getString() {
     return this.name;

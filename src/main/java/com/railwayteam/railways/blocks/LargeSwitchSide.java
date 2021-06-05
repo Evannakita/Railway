@@ -55,6 +55,8 @@ public enum LargeSwitchSide implements IStringSerializable {
     return null; // NORTH_SOUTHEAST
   }
 
+  public static BlockPos[] getOffsets (LargeSwitchSide state) { return state.offsets; }
+
   @Override
   public String getString() {
     return this.name;

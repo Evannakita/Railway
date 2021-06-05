@@ -1,5 +1,6 @@
 package com.railwayteam.railways.blocks;
 
+import com.railwayteam.railways.RailLineSegmentManager;
 import com.railwayteam.railways.Railways;
 import com.railwayteam.railways.util.VectorUtils;
 import com.tterrag.registrate.providers.DataGenContext;
@@ -32,6 +33,8 @@ public abstract class AbstractLargeTrackBlock extends Block {
   protected abstract void fillStateContainer(StateContainer.Builder<Block, BlockState> builder);
   protected abstract boolean canConnectFrom (BlockState state, IWorld worldIn, BlockPos pos, VectorUtils.Vector direction);
 
+  public abstract ArrayList<BlockPos> getAdjacentTracks (BlockState state, IWorld worldIn, BlockPos pos);
+
   @Nullable
   @Override
   public BlockState getStateForPlacement(BlockItemUseContext context) {
@@ -40,20 +43,26 @@ public abstract class AbstractLargeTrackBlock extends Block {
 
   @Override
   public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-    return checkForConnections(stateIn, worldIn, currentPos);
+    BlockState ret = checkForConnections(stateIn, worldIn, currentPos);
+    RailLineSegmentManager.updateTrack(currentPos, getAdjacentTracks(ret, worldIn, currentPos));
+    return ret;
   }
 
   @Override
   public void onBlockAdded(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
     super.onBlockAdded(state, worldIn, pos, oldState, isMoving);
     notifyCorners(state,worldIn,pos);
+    RailLineSegmentManager.updateTrack(pos, getAdjacentTracks(state, worldIn, pos));
   }
 
   @Override
   public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
     super.onReplaced(state, worldIn, pos, newState, isMoving);
     notifyCorners(state,worldIn,pos);
+    RailLineSegmentManager.removeTrack(pos);
   }
+
+
 
   private void notifyCorners (BlockState state, World worldIn, BlockPos pos) {
     BlockState corner;

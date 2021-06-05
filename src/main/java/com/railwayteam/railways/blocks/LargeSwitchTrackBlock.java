@@ -46,6 +46,16 @@ public class LargeSwitchTrackBlock extends AbstractLargeTrackBlock {
   }
 
   @Override
+  public ArrayList<BlockPos> getAdjacentTracks (BlockState state, IWorld worldIn, BlockPos pos) {
+    ArrayList<BlockPos> ret = new ArrayList<>();
+    BlockPos[] offsets = LargeSwitchSide.getOffsets(state.get(SWITCH_SIDE));
+    for (BlockPos offset : offsets) {
+      ret.add(pos.add(offset));
+    }
+    return ret;
+  }
+
+  @Override
   protected BlockState checkForConnections (BlockState state, IWorld worldIn, BlockPos pos) {
     BlockPos other = new BlockPos(pos.getX(), pos.getY(), pos.getZ());
     ArrayList<BlockPos> directions = new ArrayList<>();
