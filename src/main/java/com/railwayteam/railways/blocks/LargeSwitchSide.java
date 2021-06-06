@@ -57,6 +57,9 @@ public enum LargeSwitchSide implements IStringSerializable {
 
   public static BlockPos[] getOffsets (LargeSwitchSide state) { return state.offsets; }
   public static BlockPos   getOtherEnd (LargeSwitchSide state, VectorUtils.Vector start, boolean curved) {
+    // because offsets[0] is away from the split end, it's the only case where the switch state matters
+    //   if the cart approaches from either of the split ends, they merge together and there's only one possible exit
+    //   offsets[2] is the "turn" exit because offsets[1] is created from offsets[0].getOpposite
     if (start.value.equals(state.offsets[0])) return (curved ? state.offsets[2] : state.offsets[1]);
     return state.offsets[0];
   }

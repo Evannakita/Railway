@@ -201,16 +201,23 @@ public abstract class TrackRidingEntity extends Entity {
     public void trackMove () {
       BlockState blockState = this.world.getBlockState(this.getBlockPos());
 
-      // handle facing
+      // -- handle facing --
+      // the "next" direction is whatever direction the Track expects as the "opposite end" of where we came in
+      //   for straights this is simple, but the Tracks also account for curves and switches based on state
       VectorUtils.Vector next = ((AbstractLargeTrackBlock)blockState.getBlock()).getNextDirection(
         blockState, world, getBlockPos(),
-        VectorUtils.Vector.getClosest(getMotion()).getOpposite() // get the direction we came from
+        VectorUtils.Vector.getClosest(getMotion()).getOpposite()
       );
-      Vector3d rotate = VectorUtils.blockPosToVector3d(next.value);//.subtract(getHorizontalFacing().getDirectionVec()));
+      Vector3d rotate = VectorUtils.blockPosToVector3d(next.value);
+      // calculate Yaw as the rotation in the XZ plane (horizontal) and directly assign it
+      //   Entity#rotateTowards wouldn't work because it's slow, we want the cart to "snap" to the right direction
       this.rotationYaw = (float)(180f * Math.atan2(rotate.z, rotate.x)/Math.PI);
 
-      // handle alignment
+      // -- handle alignment --
+      // since "next" is based on a VectorUtil.Vector, which is always cardinal/intercardinal, each component is +-1 or 0
+      //   therefore we can lock the velocity <u,v,w> per axis by updating velocity to <u * |x|, v * |y|, w * |z|>
+      //   this only handles the "straight" cases though. Turns are harder.
       Vector3d snapFactor = new Vector3d(Math.abs(next.value.getX()), Math.abs(next.value.getY()), Math.abs(next.value.getZ()));
-      this.setMotion(this.getMotion().mul(snapFactor.x, snapFactor.y, snapFactor.z));
+      this.setMotion(this.getMotion().mul(snapFactor.x, 1d /* to allow gravity */, snapFactor.z));
     }
 }
