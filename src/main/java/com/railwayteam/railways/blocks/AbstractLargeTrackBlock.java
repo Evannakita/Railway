@@ -63,8 +63,6 @@ public abstract class AbstractLargeTrackBlock extends Block {
     RailLineSegmentManager.removeTrack(pos);
   }
 
-
-
   private void notifyCorners (BlockState state, World worldIn, BlockPos pos) {
     BlockState corner;
     for (int z=-1; z<2; z++) {

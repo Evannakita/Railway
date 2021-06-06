@@ -2,6 +2,7 @@ package com.railwayteam.railways.entities;
 
 import com.railwayteam.railways.Railways;
 import com.railwayteam.railways.blocks.AbstractLargeTrackBlock;
+import com.railwayteam.railways.blocks.LargeTrackBlock;
 import com.railwayteam.railways.util.VectorUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -165,17 +166,6 @@ public abstract class TrackRidingEntity extends Entity {
 
     public void move() {
         BlockState blockState = this.world.getBlockState(this.getBlockPos());
-        boolean isOnTrack = (blockState.getBlock() instanceof AbstractLargeTrackBlock);
-
-        // handle facing
-        if (isOnTrack) {
-          VectorUtils.Vector next = ((AbstractLargeTrackBlock)blockState.getBlock()).getNextDirection(
-            blockState, world, getBlockPos(),
-            VectorUtils.Vector.getClosest(getMotion()).getOpposite() // get the direction we came from
-          );
-          Vector3d rotate = VectorUtils.blockPosToVector3d(next.value);//.subtract(getHorizontalFacing().getDirectionVec()));
-          this.rotationYaw = (float)(180f * Math.atan2(rotate.z, rotate.x)/Math.PI);
-        }
         double gravity = getGravity();
         boolean isNotFalling = this.getMotion().y <= 0.0D;
 
@@ -184,6 +174,7 @@ public abstract class TrackRidingEntity extends Entity {
         } else {
             gravityMove();
         }
+        if (AbstractLargeTrackBlock.isTrack(blockState)) this.trackMove();
 
         this.move(MoverType.SELF, this.getMotion());
     }
@@ -205,5 +196,21 @@ public abstract class TrackRidingEntity extends Entity {
         if (this.collidedHorizontally && this.isOffsetPositionInLiquid(vector3d2.x, vector3d2.y + (double)0.6F - this.getY() + posY, vector3d2.z)) {
             this.setMotion(vector3d2.x, 0.3F, vector3d2.z);
         }
+    }
+
+    public void trackMove () {
+      BlockState blockState = this.world.getBlockState(this.getBlockPos());
+
+      // handle facing
+      VectorUtils.Vector next = ((AbstractLargeTrackBlock)blockState.getBlock()).getNextDirection(
+        blockState, world, getBlockPos(),
+        VectorUtils.Vector.getClosest(getMotion()).getOpposite() // get the direction we came from
+      );
+      Vector3d rotate = VectorUtils.blockPosToVector3d(next.value);//.subtract(getHorizontalFacing().getDirectionVec()));
+      this.rotationYaw = (float)(180f * Math.atan2(rotate.z, rotate.x)/Math.PI);
+
+      // handle alignment
+      Vector3d snapFactor = new Vector3d(Math.abs(next.value.getX()), Math.abs(next.value.getY()), Math.abs(next.value.getZ()));
+      this.setMotion(this.getMotion().mul(snapFactor.x, snapFactor.y, snapFactor.z));
     }
 }
