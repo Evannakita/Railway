@@ -1,0 +1,7 @@
+{
+  "doot": {
+    "category": "player",
+    "subtitle": "railways.subtitle.doot",
+    "sounds": [ "railways:doot" ]
+  }
+}

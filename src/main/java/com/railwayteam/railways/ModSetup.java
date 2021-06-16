@@ -34,14 +34,18 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 
@@ -87,6 +91,9 @@ public class ModSetup {
   public static EntityEntry<Entity> R_ENTITY_STEADYCART;
   public static EntityEntry<ConductorEntity> R_ENTITY_CONDUCTOR;
   public static EntityEntry<HandcarEntity> R_ENTITY_HANDCAR;
+
+  static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, "railways");
+  public static RegistryObject<SoundEvent> R_SOUND_DOOT;
 
   public void init() {
   }
@@ -226,7 +233,7 @@ public class ModSetup {
 
     R_BLOCK_HORN = reg.block("horn", HornBlock::new)
             .properties(p->p.hardnessAndResistance(10f, 10f).nonOpaque())
-            .item().model((ctx, prov) -> prov.getExistingFile(prov.modLoc("item/horn"))).build()
+            .item(HornBlock.HornItem::new).model((ctx, prov) -> prov.getExistingFile(prov.modLoc("item/horn"))).build()
             .blockstate((ctx,prov) -> prov.horizontalFaceBlock(ctx.getEntry(),
                     (blockstate) -> (prov.models().getExistingFile(
                             prov.modLoc("block/horn/horn_" + (blockstate.get(HorizontalFaceBlock.FACE) == AttachFace.WALL ? "side" : "bottom") + "_" + blockstate.get(HornBlock.HORNS))
@@ -392,6 +399,8 @@ public class ModSetup {
             .lang("Handcar")
             .properties(p -> p.size(2, 1.7F))
             .register();
+
+    R_SOUND_DOOT = SOUNDS.register("doot", () -> new SoundEvent(new ResourceLocation("railways", "doot")));
   }
 
   @OnlyIn(value=Dist.CLIENT)

@@ -7,6 +7,7 @@ import com.railwayteam.railways.items.ConductorItem;
 import com.railwayteam.railways.items.StationEditorItem;
 import com.railwayteam.railways.items.engineers_cap.EngineersCapItem;
 import com.railwayteam.railways.packets.CustomPacketStationList;
+import com.railwayteam.railways.util.SoundUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.minecart.MinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -94,6 +95,11 @@ public class RailwaysEventHandler {
   }
 
   int ticksToRcsUpdate = 20;
+
+  @SubscribeEvent
+  public void onClientTick(TickEvent.ClientTickEvent event) {
+    SoundUtil.tick(event);
+  }
 
   @SubscribeEvent
   public void onServerTick(TickEvent.ServerTickEvent event) {

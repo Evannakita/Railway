@@ -62,6 +62,7 @@ public class Railways {
 
     MOD_EVENT_BUS.addListener(Railways::clientInit);
 
+    ModSetup.SOUNDS.register(MOD_EVENT_BUS);
     railwayRegistrar = Registrate.create(Railways.MODID);
     setup.register(railwayRegistrar);
 
